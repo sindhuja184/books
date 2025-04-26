@@ -1,0 +1,9 @@
+Commands 
+1. fastapi dev main.py
+2. fastapi --help
+
+
+crud
+create, read, update, delete
+
+resource-> Provides or allows you to manipukate dta
