@@ -1,6 +1,17 @@
 Commands 
 1. fastapi dev main.py
 2. fastapi --help
+3. psql -U postgres
+4. pip install asyncpg
+
+
+
+Type "help" for help.
+
+postgres=# CREATE USER sindh WITH PASSWORD 'Sindhu';
+
+CREATE ROLE
+postgres=#
 
 
 crud
@@ -13,3 +24,21 @@ Data bases with sql model
 
 Fast api supports varios types of databases SQ, No sql, relational etc
 
+
+Why are we using PostgreSQL?
+- This is used in relational database 
+- Free and open-source relational database management system
+- It offers nuerous benefits
+
+
+Whats ORM?
+An Object Relational Mapper (ORM), translates between a programming language, and database like PostgreSQL
+
+Mapping Onjects to tables:
+    - Create Python classes to represent the table
+    - Each object of this class correspons to a row in database table
+    - ORM translates the actions into appropriate SQL queries
+
+SQL- Alchemy:
+    - Most popular ORM 
+    - Seamless integration with pydantic 
