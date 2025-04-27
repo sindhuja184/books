@@ -6,4 +6,10 @@ Commands
 crud
 create, read, update, delete
 
-resource-> Provides or allows you to manipukate dta
+resource-> Provides or allows you to manipukate data
+
+
+Data bases with sql model
+
+Fast api supports varios types of databases SQ, No sql, relational etc
+
