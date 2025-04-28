@@ -4,9 +4,20 @@ Commands
 3. psql -U postgres
 4. pip install asyncpg
 5. alembic init -t async migrations
-
+6. alembic revision --autogenerate -m "init"
+7. alembic upgrade head
+8. alembic revision --autogenerate -m "auto password hash"
 
 Type "help" for help.
+
+
+The basic timeline:
+    1. Basics of fastapi
+    2. Basic CRUD(Without DB)
+    3. CRUD(With DB)
+    4. Adding User model
+    5. Adding Authentication to user model
+    6. JWT Authentication
 
 postgres=# CREATE USER sindh WITH PASSWORD 'Sindhu';
 
@@ -62,3 +73,32 @@ Migrations:
     1. Version:
         This folder holds the files that track migrations and database changes 
         
+After executing the aembic things
+1. In the bookly_db 3 tables/relations are created
+    i. alembic_version:
+        This maintains the record of migrations
+    ii. books
+    iii. users
+
+
+NOw, User Account Creation
+
+
+ Why do we need bcrypt?
+When users create passwords (e.g., for logging into a website), we should never store their actual passwords directly.
+If someone hacks the database, they shouldn't see plain-text passwords!
+
+Instead:
+
+We hash the password (convert it into a scrambled form).
+
+We store only the hash.
+
+Later, when the user logs in, we hash their entered password again and compare the hashes, not the raw passwords.
+
+⚙️ What is bcrypt doing exactly?
+It takes a password (like mypassword123)
+
+It adds a "salt" (random extra characters to make it unique)
+
+It runs multiple rounds of hashing to make it very slow for attackers to crac
