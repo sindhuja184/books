@@ -3,7 +3,7 @@ Commands
 2. fastapi --help
 3. psql -U postgres
 4. pip install asyncpg
-
+5. alembic init -t async migrations
 
 
 Type "help" for help.
@@ -48,3 +48,17 @@ Observation:
     validation error
 
 Completed crud
+
+
+Create User Authentication model:
+
+Migrations:
+    Make changes to the database without having to
+    loose data
+
+
+ alembic init -t async migrations:
+    After this a new folder called migrations is created it has
+    1. Version:
+        This folder holds the files that track migrations and database changes 
+        

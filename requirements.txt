@@ -2,4 +2,4 @@ fastapi
 asyncpg
 pydantic-settings
 sqlmodel
-    
+alembic

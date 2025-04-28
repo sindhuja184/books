@@ -23,7 +23,7 @@ async def create_book(book_data: BookCreateModel):
     }
 
 @app.get('/get_headers', status_code = 200)
-async  def get_headers(
+async  def get_header(
     accept: Optional[str] = Header(None),
     content_type: str = Header(None),
     user_agent : str = Header(None),
@@ -35,3 +35,5 @@ async  def get_headers(
     request_header["User-Agent"] = user_agent
     request_header["Host"] = host
     return request_header
+
+
