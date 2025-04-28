@@ -42,3 +42,9 @@ Mapping Onjects to tables:
 SQL- Alchemy:
     - Most popular ORM 
     - Seamless integration with pydantic 
+
+Observation:
+    The errors I encountered are mostly due to the
+    validation error
+
+Completed crud

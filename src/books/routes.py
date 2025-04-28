@@ -2,26 +2,23 @@ from fastapi import FastAPI, APIRouter, status, Depends
 from pydantic import BaseModel
 from typing import List
 from fastapi.exceptions import HTTPException
-from ..books.schemas import BookUpdateModel
-from src.db.models import Book
+from src.books.schemas import BookUpdateModel, Book
+from src.books.service import BookService
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from src.books.service import BookService
 
 router = APIRouter()
 book_service = BookService()
 
 
+# In the route:
 @router.get('/', response_model=List[Book])
-async def get_all_books(
-    session: AsyncSession = Depends(get_session)
-):
+async def get_all_books(session: AsyncSession = Depends(get_session)):
     books = await book_service.get_all_books(session)
-    return books
+    return books  # No need for from_orm since we now have actual Book instances
 
 
-
-@router.post('/')
+@router.post('/', status_code=status.HTTP_201_CREATED, response_model= Book)
 async def create_a_book(
     book_data: Book, 
     session: AsyncSession = Depends(get_session),
@@ -46,7 +43,7 @@ async def get_book(
 
 
 
-@router.put('/{book_uid}')
+@router.patch('/{book_uid}', response_model=Book)
 async def update_book(
     book_uid: str, 
     book_update_data: BookUpdateModel,
@@ -66,7 +63,8 @@ async def delete_book(
     session: AsyncSession = Depends(get_session)):
     book_to_delete = await book_service.delete_book(book_uid, session)
 
-    if book_to_delete:
-        return None
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book Not Found")
-
+    if book_to_delete is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book Not Found")
+    else:
+        return {}
+    

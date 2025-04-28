@@ -1,7 +1,7 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
 from .schemas import BookCreateModel, BookUpdateModel
 from sqlmodel import select, desc
-from src.db.models import Book
+from src.books.models import Book
 from datetime import datetime
 
 #Error1 : Had to change exec to execute, it worked
@@ -11,7 +11,7 @@ class BookService:
 
         result = await session.execute(statement=statement)
 
-        return result.all()
+        return result.scalars().all()
 
 
     async def get_book(self, book_uid: str, session: AsyncSession):
@@ -19,7 +19,7 @@ class BookService:
         
         result = await session.execute(statement)
         
-        book = result.first()
+        book = result.scalars().first()
 
         return book if book is not None else None
 
@@ -38,7 +38,7 @@ class BookService:
     
     async def update_book(self, book_uid: str, update_data: BookUpdateModel,session: AsyncSession):
         #Fetch the book
-        book_to_update = self.get_book(book_uid, session)
+        book_to_update = await self.get_book(book_uid, session)
         
         if book_to_update is not None:
             #The new data
@@ -55,7 +55,7 @@ class BookService:
 
  
     async def delete_book(self, book_uid: str, session: AsyncSession):
-        book_to_delete = self.get_book(book_uid, session)
+        book_to_delete = await self.get_book(book_uid, session)
 
         if book_to_delete is not None:
             await session.delete(book_to_delete)
