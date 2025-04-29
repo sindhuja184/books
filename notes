@@ -102,3 +102,56 @@ It takes a password (like mypassword123)
 It adds a "salt" (random extra characters to make it unique)
 
 It runs multiple rounds of hashing to make it very slow for attackers to crac
+
+
+JWT Authentcation
+
+- We shall allow users ti identify themselves so that they can gain acees to the aplication
+
+- this is a stateless client-side form of authentication where user indentify themselves through the use of JWT's
+
+- JWT are essentially credentials that contain informaton about user 
+- This information is encoded in JSON format, This token is digitally designed, ensuring authencity and integrity
+
+
+Componentsof JWT:
+    JSON web token
+    JWT has three parts 
+    - Header:  specifies the algorithm used (e.g., HS256)
+    - Payload: the actual data (like user ID, email)
+    - Signature: 
+
+    - Seperated by a period sign
+
+ How JWT Authentication Works:
+    User logs in with username and password.
+
+    If credentials are valid, the server creates a JWT and sends it back to the client.
+
+    The client stores the token (usually in local storage or cookies).
+
+    For future requests, the client sends the token in the Authorization header:
+
+    makefile
+    Copy code
+    Authorization: Bearer <JWT>
+    The server verifies the token using its secret key and, if valid, processes the request.
+Advantages
+    Stateless (no need to store sessions on the server)
+
+    Secure (if properly implemented)
+
+    Scalable (easy to use in distributed systems)
+
+How JWT Auth works:
+    - The user logs into application
+    - Server verifis user's credentials
+    - Upon sucessful login, server generates a JWT user claims.
+    - For future requests, client sends the JWT in HTTP header.
+
+Some benefit of JWT's:
+    - Can be send via URL, PoST request body, or header
+    - They are self-contained
+    - They are secure
+    - They can be used across different domains
+    
