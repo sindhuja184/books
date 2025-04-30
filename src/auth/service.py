@@ -1,4 +1,5 @@
 from .models import User
+from fastapi import HTTPException, status
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
 from src.auth.schemas import UserCreateModel
@@ -9,9 +10,10 @@ class UserService:
 
         result = await session.execute(statement)
 
-        user = result.first()
-
+        user_row = result.first()
+        user = user_row[0] if user_row else None
         return user
+
     
     async def user_exists(self, email, session: AsyncSession):
         user = await self.get_user_by_email(email, session)
@@ -26,13 +28,22 @@ class UserService:
         new_user = User(
             **user_data_dict
         )
+        
+        user_exist = await self.user_exists(new_user.email, session)
 
-        new_user.password_hash = generate_password_hash(user_data_dict['password'])
+        if not user_exist:
+            new_user.password_hash = generate_password_hash(user_data_dict['password'])
 
-        session.add(new_user)
+            session.add(new_user)
 
-        await session.commit()
+            await session.commit()
 
-        return new_user
+            return new_user
+        
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="A user with this email already exists."
+            )
     
 

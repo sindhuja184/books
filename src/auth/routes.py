@@ -1,3 +1,9 @@
+#Faced an error that password hash field was'nt there 
+#Has to fix the signup logic  as it created issues
+# Has to change the type of timedelta for expiry 
+# it created an issue as its not json serialoisablle 
+
+
 from fastapi import APIRouter, Depends, status
 from src.auth.schemas import UserCreateModel, UserModel, UserLoginModel
 from src.auth.service import UserService
@@ -6,7 +12,7 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 from fastapi.exceptions import HTTPException
 from .utils import create_access_token, decode_token, verify_password
 from datetime import timedelta
-
+from fastapi.responses import JSONResponse
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -83,6 +89,23 @@ async def login_users(
                     'email': user.email,
                     'user_uid' : str(user.uid)
                 },
-                refresh = True,
-                expiry = timedelta(days = REFRESH_TOKEN_EXPIRY)
+                refresh=True,
+                expiry=timedelta(days=REFRESH_TOKEN_EXPIRY).total_seconds()  # **Convert timedelta to seconds**
             )
+
+            return JSONResponse(
+                content= {
+                    "message": "Login Sucessful",
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                    "user" : {
+                        "email": user.email,
+                        "uid": str(user.uid)
+                    }
+                }
+            )
+        raise HTTPException(
+            status_code = status.HTTP_403_FORBIDDEN,
+            detail = "Invalid Email or Password"
+        )
+
