@@ -155,3 +155,27 @@ Some benefit of JWT's:
     - They are secure
     - They can be used across different domains
     
+
+ #  Access Token:
+        Purpose: Used to access protected routes or resources.
+
+        Short-lived: Typically valid for a short time (e.g., 15 minutes to 1 hour).
+
+        Sent with each request: Clients send it in the header (Authorization: Bearer <token>) to prove they are authenticated.
+
+        Smaller risk: Since it expires quickly, even if stolen, damage is limited.
+
+# Refresh Token:
+        Purpose: Used to get a new access token without logging in again.
+
+        Long-lived: Can last days, weeks, or more.
+
+        Stored securely: Should not be sent with every request—store it securely (e.g., HTTP-only cookie).
+
+        Used when access token expires: Client sends it to the server to request a new access token.
+
+
+`JWT Authentication (HTTP Bearer Authentication)` 
+
+- Limiting the access to the users who doonot have tokens
+

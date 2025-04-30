@@ -6,14 +6,22 @@ from src.books.schemas import BookUpdateModel, Book
 from src.books.service import BookService
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
+from src.auth.dependencies import AccessTokenBearer
+
 
 router = APIRouter()
 book_service = BookService()
+access_token_bearer = AccessTokenBearer()
 
 
 # In the route:
 @router.get('/', response_model=List[Book])
-async def get_all_books(session: AsyncSession = Depends(get_session)):
+async def get_all_books(
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer)
+    ):
+    #Indicates whether this is a refresh token or an access token.
+    print(user_details)
     books = await book_service.get_all_books(session)
     return books  # No need for from_orm since we now have actual Book instances
 
@@ -22,8 +30,7 @@ async def get_all_books(session: AsyncSession = Depends(get_session)):
 async def create_a_book(
     book_data: Book, 
     session: AsyncSession = Depends(get_session),
-    status_code = status.HTTP_201_CREATED, 
-    response_model= Book
+    user_details = Depends(access_token_bearer)
 ):
     new_book = await book_service.create_book(book_data, session)
     return new_book
@@ -33,7 +40,8 @@ async def create_a_book(
 @router.get('/{book_uid}', response_model = Book)
 async def get_book(
     book_uid:str,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer)
     ):
     book = await book_service.get_book(book_uid, session)
     if book:
@@ -47,7 +55,8 @@ async def get_book(
 async def update_book(
     book_uid: str, 
     book_update_data: BookUpdateModel,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer)
     ) -> dict:
     
     update_book = await book_service.update_book(book_uid, book_update_data, session)
@@ -57,10 +66,13 @@ async def update_book(
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
+
 @router.delete('/{book_uid}', status_code= status.HTTP_204_NO_CONTENT)
 async def delete_book(
     book_uid: str, 
-    session: AsyncSession = Depends(get_session)):
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer)
+    ):
     book_to_delete = await book_service.delete_book(book_uid, session)
 
     if book_to_delete is None:
