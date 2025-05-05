@@ -179,3 +179,28 @@ Some benefit of JWT's:
 
 - Limiting the access to the users who doonot have tokens
 
+`JWT Authentication (Creating New Access Tokens)`
+
+
+
+ACcess vs refresh tokens
+User logs in → receives access token and refresh token.
+
+Access token is used in API requests.
+
+When the access token expires, the refresh token is sent to the server to get a new access token without logging in again.
+
+What is Dependency Injection?
+It’s a design pattern where objects (like functions, classes, or values) are provided to other parts of the application rather than hardcoded. FastAPI uses this to reuse logic like authentication, database sessions, or parameter validation.
+
+
+`JWT Authetication(Revoking User Tokens with Redis)`
+- 5:50:07
+- JWT are stateless, so revoking them (eg on logout) requires a blacklist.
+- Redis fast-in-memory operations
+
+Workflow
+1. User Login --> Issue JWT
+2. Logout
+3. Every Authentticated Request
+
