@@ -7,6 +7,9 @@ Commands
 6. alembic revision --autogenerate -m "init"
 7. alembic upgrade head
 8. alembic revision --autogenerate -m "auto password hash"
+9. docker run --name redis -p 6379:6379 -d redis
+10. docker ps
+
 
 Type "help" for help.
 
@@ -204,3 +207,32 @@ Workflow
 2. Logout
 3. Every Authentticated Request
 
+JWT are stateless tokens, meaning once they're issued they cannot be altered or deleted by the server.
+
+1. User logs in ---> Server issues a JWT
+    - server successfully  logs and generates a JNT
+    - authenticate future requests
+
+2. Client makes requests with the JWT
+    - The client stores the token
+    - Authorization: Bearer <JWT>
+    - valid the granted acccess 
+
+3. User Logs out--> We revoke the token 
+    - JWTs are stateless logging out doensnot destroy the token
+    - When user logs out 
+        - Takes the tokens the client used.
+        - Stores in Redis along w=with a expiration time
+        - Creates a revocation list
+
+4. Subsequent Requests -> check if the token is blacklisted
+    - Verify JWT(signature + expiry)
+    - if found in redis the token i s revoked and the access is denied 
+    - if not found --> token is considered valid 
+
+5. Token expires --> Redis is auto-removed
+
+    BENEFITS OF THIS APPROACH:
+        - Combines speed of JWT's with the security of token revocation.
+        - Redis ensures fast lookups and automatic cleanup
+        - Suitable for microservices and stateless API's
