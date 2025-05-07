@@ -6,19 +6,23 @@ from src.books.schemas import BookUpdateModel, Book
 from src.books.service import BookService
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from src.auth.dependencies import AccessTokenBearer
+from src.auth.dependencies import AccessTokenBearer, RoleChecker
 
 
 router = APIRouter()
 book_service = BookService()
 access_token_bearer = AccessTokenBearer()
+role_checker = Depends(RoleChecker(['admin', 'user']))
 
 
 # In the route:
-@router.get('/', response_model=List[Book])
+@router.get('/', 
+            response_model=List[Book], 
+            dependencies= [role_checker]
+)
 async def get_all_books(
     session: AsyncSession = Depends(get_session),
-    user_details = Depends(access_token_bearer)
+    user_details = Depends(access_token_bearer),
     ):
     #Indicates whether this is a refresh token or an access token.
     print(user_details)
@@ -26,7 +30,11 @@ async def get_all_books(
     return books  # No need for from_orm since we now have actual Book instances
 
 
-@router.post('/', status_code=status.HTTP_201_CREATED, response_model= Book)
+@router.post('/', 
+             status_code=status.HTTP_201_CREATED, 
+             response_model= Book, 
+            dependencies= [role_checker]
+)
 async def create_a_book(
     book_data: Book, 
     session: AsyncSession = Depends(get_session),
@@ -37,7 +45,10 @@ async def create_a_book(
 
 
 
-@router.get('/{book_uid}', response_model = Book)
+@router.get('/{book_uid}', 
+            response_model = Book,
+            dependencies= [role_checker]
+)
 async def get_book(
     book_uid:str,
     session: AsyncSession = Depends(get_session),
@@ -51,7 +62,10 @@ async def get_book(
 
 
 
-@router.patch('/{book_uid}', response_model=Book)
+@router.patch('/{book_uid}', 
+              response_model=Book,
+              dependencies= [role_checker]
+)
 async def update_book(
     book_uid: str, 
     book_update_data: BookUpdateModel,
@@ -67,7 +81,10 @@ async def update_book(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
 
 
-@router.delete('/{book_uid}', status_code= status.HTTP_204_NO_CONTENT)
+@router.delete('/{book_uid}', 
+               status_code= status.HTTP_204_NO_CONTENT,
+               dependencies= [role_checker]
+)
 async def delete_book(
     book_uid: str, 
     session: AsyncSession = Depends(get_session),

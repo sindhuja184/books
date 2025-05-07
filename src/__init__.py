@@ -9,6 +9,8 @@ version = 'v1'
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("The server is starting..")
+    from src.books.models import Book
+    
     await init_db()
     yield
     print("The server has been stopped")
@@ -16,8 +18,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title= "Bookly",
     description = 'A REST API for a book review and web service',
-    version= version,
-    lifespan=lifespan
+    version= version
 )
 
 app.include_router(router=router, prefix=f'/api/{version}/books')

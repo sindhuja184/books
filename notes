@@ -1,7 +1,7 @@
 Commands 
 1. fastapi dev main.py
 2. fastapi --help
-3. psql -U postgres
+3. psql -U postgres pass Sindhu
 4. pip install asyncpg
 5. alembic init -t async migrations
 6. alembic revision --autogenerate -m "init"
@@ -236,3 +236,8 @@ JWT are stateless tokens, meaning once they're issued they cannot be altered or 
         - Combines speed of JWT's with the security of token revocation.
         - Redis ensures fast lookups and automatic cleanup
         - Suitable for microservices and stateless API's
+
+`Role Based Access Control`
+
+1. Role- Based Access Control(RBAC), who can do what in your application
+
