@@ -7,8 +7,9 @@ Commands
 6. alembic revision --autogenerate -m "init"
 7. alembic upgrade head
 8. alembic revision --autogenerate -m "auto password hash"
-9. docker run --name redis -p 6379:6379 -d redis
-10. docker ps
+9. docker start redis
+10. docker run --name redis -p 6379:6379 -d redis
+11. docker ps
 
 
 Type "help" for help.
@@ -240,4 +241,13 @@ JWT are stateless tokens, meaning once they're issued they cannot be altered or 
 `Role Based Access Control`
 
 1. Role- Based Access Control(RBAC), who can do what in your application
+
+
+`Model Relationships(One to Many Relationship)`
+
+- Assosciate relationships between different entities 
+
+- Establish relation shp between users table and books table(establish foreign key)
+
+
 

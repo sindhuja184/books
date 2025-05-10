@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter, status, Depends
 from pydantic import BaseModel
 from typing import List
 from fastapi.exceptions import HTTPException
-from src.books.schemas import BookUpdateModel, Book
+from src.books.schemas import BookCreateModel, BookUpdateModel, Book
 from src.books.service import BookService
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
@@ -30,17 +30,32 @@ async def get_all_books(
     return books  # No need for from_orm since we now have actual Book instances
 
 
+@router.get('/user/{user_uid}', 
+            response_model=List[Book], 
+            dependencies= [role_checker]
+)
+async def get_user_book_submissions(
+    user_uid: str,
+    session: AsyncSession = Depends(get_session),
+    user_details = Depends(access_token_bearer),
+    ):
+
+    books = await book_service.get_user_books(user_uid, session)
+    return books  # No need for from_orm since we now have actual Book instances
+
+
 @router.post('/', 
              status_code=status.HTTP_201_CREATED, 
              response_model= Book, 
             dependencies= [role_checker]
 )
 async def create_a_book(
-    book_data: Book, 
+    book_data: BookCreateModel, 
     session: AsyncSession = Depends(get_session),
-    user_details = Depends(access_token_bearer)
-):
-    new_book = await book_service.create_book(book_data, session)
+    token_details : dict = Depends(access_token_bearer)
+)-> dict:
+    user_id = token_details.get('user')['user_uid']
+    new_book = await book_service.create_book(book_data, user_id, session)
     return new_book
 
 
@@ -52,8 +67,8 @@ async def create_a_book(
 async def get_book(
     book_uid:str,
     session: AsyncSession = Depends(get_session),
-    user_details = Depends(access_token_bearer)
-    ):
+    token_details : dict = Depends(access_token_bearer)
+    ) -> dict:
     book = await book_service.get_book(book_uid, session)
     if book:
         return book
