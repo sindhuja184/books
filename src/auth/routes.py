@@ -5,7 +5,7 @@
 
 
 from fastapi import APIRouter, Depends, status
-from src.auth.schemas import UserCreateModel, UserModel, UserLoginModel
+from src.auth.schemas import UserCreateModel, UserModel, UserLoginModel, UserBooksModel
 from src.auth.service import UserService
 from src.db.main import get_session
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -36,12 +36,19 @@ async def create_user_account(
     user_data: UserCreateModel,
     session: AsyncSession = Depends(get_session)
     ):    
+    """
+    Create user account using email, username, first_name, last_name
+    params:
+        user_data: UserCreateModel
+    """
     email = user_data.email
 
     user_exists = await user_service.user_exists(email, session)
 
     if user_exists:
-        raise HTTPException(status_code= status.HTTP_403_FORBIDDEN, detail = "User with the email already exists")
+        raise HTTPException(
+            status_code= status.HTTP_403_FORBIDDEN, 
+            detail = "User with the email already exists")
     
     new_user = await user_service.create_user(
         user_data,
@@ -113,11 +120,11 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
             {
                 "access_token": new_acess_token
             }
-        )
+        ) 
 
     raise HTTPException(status_code= status.HTTP_400_BAD_REQUEST, detail = "Invalid or expired token")
 
-@auth_router.get('/me', response_model=UserModel)
+@auth_router.get('/me', response_model=UserBooksModel)
 async def get_current_user(
     user = Depends(get_current_user),
     _: bool = Depends(role_checker)):

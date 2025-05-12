@@ -2,23 +2,21 @@ from .models import User
 from fastapi import HTTPException, status
 from sqlmodel.ext.asyncio.session import AsyncSession
 from sqlmodel import select
+from sqlalchemy.orm import selectinload
 from src.auth.schemas import UserCreateModel
 from src.auth.utils import generate_password_hash, verify_password
 class UserService:
     async def get_user_by_email(self, email:str, session: AsyncSession):
-        statement = select(User).where(User.email == email)
-
+        statement = select(User).options(selectinload(User.books)).where(User.email == email)
         result = await session.execute(statement)
-
-        user_row = result.first()
-        user = user_row[0] if user_row else None
+        user = result.scalars().first()
         return user
 
     
     async def user_exists(self, email, session: AsyncSession):
         user = await self.get_user_by_email(email, session)
 
-        return True if user is not None else False 
+        return user is not None
     
     
     async def create_user(self, user_data: UserCreateModel, session: AsyncSession):
@@ -38,7 +36,7 @@ class UserService:
             session.add(new_user)
 
             await session.commit()
-
+            await session.refresh(new_user)
             return new_user
         
         else:

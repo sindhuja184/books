@@ -251,3 +251,34 @@ JWT are stateless tokens, meaning once they're issued they cannot be altered or 
 
 
 
+`More Model Relationships`
+
+- Related to the book review 
+ greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)", 'input': User amrlak, 'ctx': {'error': "MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)"}}
+
+ - Error raised byt he async await, it called while not inside the greenlet spawn c ontext
+
+- Class Signature
+
+class sqlalcemy.exc.missinggreenlet (sqlalchemy.exc.InvaldRequestError)
+
+-- Two days to solve the error Huh!!!
+
+| Action                             | Code Fix                                              |
+| ---------------------------------- | ----------------------------------------------------- |
+| Fix greenlet error                 | Use `selectinload(User.books)` + `scalars().first()`  |
+| Fix token login logic              | `get_user_by_email` returns full user + books eagerly |
+| Fix session state issue            | Use `await session.refresh(new_user)`                 |
+| Fix `get_current_user` logic       | Already correct, uses `AccessTokenBearer()`           |
+| Ensure `UserModel` and `BookModel` | Include `orm_mode = True` and lists                   |
+Changes made
+
+
+Now three relationships
+
+- Books
+- Users
+- Reviews
+
+- One to many relation between user and books
+- One to many relation between user and reviews 

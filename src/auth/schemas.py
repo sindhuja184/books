@@ -22,9 +22,12 @@ class UserModel(BaseModel):
     created_at: datetime
     updated_at: datetime
     books : List[Book]
+    class Config: 
+        orm_mode = True
 
-    def __repr__(self):
-        return f"User {self.username}"
+    
+class UserBooksModel(UserModel):
+    books: List[Book]
     
 class UserLoginModel(BaseModel):
     email: str = Field(max_length= 40)
