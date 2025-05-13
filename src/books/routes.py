@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter, status, Depends
 from pydantic import BaseModel
 from typing import List
 from fastapi.exceptions import HTTPException
-from src.books.schemas import BookCreateModel, BookUpdateModel, Book
+from src.books.schemas import BookCreateModel, BookUpdateModel, Book, BookDetailModel
 from src.books.service import BookService
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
@@ -61,7 +61,7 @@ async def create_a_book(
 
 
 @router.get('/{book_uid}', 
-            response_model = Book,
+            response_model = BookDetailModel,
             dependencies= [role_checker]
 )
 async def get_book(

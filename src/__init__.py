@@ -3,13 +3,13 @@ from src.books.routes import router
 from src.auth.routes import auth_router
 from contextlib import asynccontextmanager
 from src.db.main import init_db
-
+from src.reviews.routes import review_router
 version = 'v1'
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("The server is starting..")
-    from src.books.models import Book
+    from src.db.models import Book
     
     await init_db()
     yield
@@ -23,3 +23,4 @@ app = FastAPI(
 
 app.include_router(router=router, prefix=f'/api/{version}/books')
 app.include_router(router = auth_router, prefix = f'/api/{version}/auth')
+app.include_router(review_router, prefix= f'/api/{version}/reviews')
