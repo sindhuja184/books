@@ -282,3 +282,6 @@ Now three relationships
 
 - One to many relation between user and books
 - One to many relation between user and reviews 
+
+
+`ERROR HANDLING` 
