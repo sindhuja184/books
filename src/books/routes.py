@@ -7,7 +7,7 @@ from src.books.service import BookService
 from src.db.main import get_session
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from src.auth.dependencies import AccessTokenBearer, RoleChecker
-
+from src.errors import BookNotFound
 
 router = APIRouter()
 book_service = BookService()
@@ -108,7 +108,7 @@ async def delete_book(
     book_to_delete = await book_service.delete_book(book_uid, session)
 
     if book_to_delete is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book Not Found")
+        raise BookNotFound()
     else:
         return {}
     

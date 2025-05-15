@@ -5,6 +5,8 @@ from sqlmodel import select
 from sqlalchemy.orm import selectinload
 from src.auth.schemas import UserCreateModel
 from src.auth.utils import generate_password_hash, verify_password
+from src.errors import UserAlreadyExists
+
 class UserService:
     async def get_user_by_email(self, email:str, session: AsyncSession):
         statement = select(User).options(selectinload(User.books)).where(User.email == email)
@@ -40,9 +42,6 @@ class UserService:
             return new_user
         
         else:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="A user with this email already exists."
-            )
+            raise UserAlreadyExists()
     
 
