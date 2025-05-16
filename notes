@@ -428,3 +428,36 @@ Steps
     1. Provide the email
     2. Send the reset link
     3. Reset password -> Password reset confirm
+
+# Reduce creation time
+
+  Background tasks
+  Waiting time reduced fron 4sec to 0.5 sec as I have added background tasks to the send email function in create account
+
+# CELERY
+Celery lets you run time-consuming or scheduled tasks in the background instead of blocking your main application. This is especially useful in FastAPI, Django, or Flask apps.
+
+
+| Task Type              | Example                                                   |
+| ---------------------- | --------------------------------------------------------- |
+| **Email Sending**      | Send email after user signs up or resets password         |
+| **Image Processing**   | Resize, convert, or upload files without blocking the app |
+| **Data Import/Export** | Long-running CSV imports or reports generation            |
+| **Scheduled Tasks**    | Send daily summary emails or clean up expired tokens      |
+| **External API Calls** | Run API calls without slowing down user response          |
+| **ML Model Inference** | Run predictions in the background when it takes time      |
+
+
+⚙️ How It Works
+You define tasks (functions) using a @celery.task decorator.
+
+A worker process runs in the background to execute those tasks.
+
+Tasks are queued in a message broker (like Redis or RabbitMQ).
+
+You call the task asynchronously, and Celery will execute it without blocking your app.
+
+![alt text](image-1.png)
+
+Steps:
+    - Set broker Url in config.py

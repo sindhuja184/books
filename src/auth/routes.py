@@ -4,7 +4,7 @@
 # it created an issue as its not json serialoisablle 
 
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, BackgroundTasks
 from src.auth.schemas import UserCreateModel, UserModel, UserLoginModel, UserBooksModel, EmailModel, PasswordResetRequestModel, PasswordResetConfirmModel
 from src.auth.service import UserService
 from src.db.main import get_session
@@ -20,6 +20,8 @@ from src.errors import UserAlreadyExists, UserNotFound, InvalidCredentials, Expi
 from src.mail import mail, create_message
 from src.config import Config
 from src.db.main import get_session
+from src.celery_tasks import send_email
+
 
 auth_router = APIRouter()
 user_service = UserService()
@@ -37,13 +39,7 @@ async def send_mail(emails: EmailModel):
 
     html = "<h1>Welcome to the app</h1>"
 
-    message = create_message(
-        receipients=emails,
-        subject= 'Welcome',
-        body = html
-    )
-
-    await mail.send_message(message)
+    send_email.delay(emails, "Welcome to the app", html)
 
     return {"message" : "Email sent successfully"}
 
@@ -53,6 +49,7 @@ async def send_mail(emails: EmailModel):
     )
 async def create_user_account(
     user_data: UserCreateModel,
+    bg_tasks:BackgroundTasks,
     session: AsyncSession = Depends(get_session)
     ):    
     """
@@ -87,7 +84,7 @@ async def create_user_account(
         body = html_message
     )
 
-    await mail.send_message(message)
+    bg_tasks.add_task(mail.send_message(message))
     
     return {
         "message" : "Account Created!! Check email to verify your account",
@@ -219,13 +216,8 @@ async def password_reset_request(email_data: PasswordResetRequestModel):
     <h1>Reset your password</h1>
     <p>Please click this <a href = "{link}">link</a> to reset your password</p>
     """
-    message = create_message(
-        receipients=[email],
-        subject= 'Reset your password',
-        body = html_message
-    )
-
-    await mail.send_message(message)
+    emails = [email]
+    send_email.delay(emails, "Reset your password", html_message)
     
     return JSONResponse(
         content = {
