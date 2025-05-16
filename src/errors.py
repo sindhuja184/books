@@ -55,7 +55,8 @@ class UserNotFound(BooklyException):
 class ExpiredToken(BooklyException):
     '''Invalid or expired token'''
 
-
+class AccountNotVerified(Exception):
+    '''Account Not Verified yet '''
 
 def create_exception_handler(status_code: int, initial_detail: Any) -> Callable[[Request, Exception], JSONResponse]:
     
@@ -189,6 +190,17 @@ def register_all_errors(app: FastAPI):
             }
         )
     )
+    app.add_exception_handler(
+        AccountNotVerified,
+        create_exception_handler(
+            status_code=status.HTTP_403_FORBIDDEN,
+            initial_detail= {
+                "message": "Account not verified",
+                "error_code": "Account not verified",
+                "reslution": "Please check your inbox for verification details"
+            }
+        )
+    )
     @app.exception_handler(500)
     async def internal_server_error(request, exc):
         return JSONResponse(
@@ -209,3 +221,4 @@ def register_all_errors(app: FastAPI):
             },
             status_code= status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+    

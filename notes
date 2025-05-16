@@ -421,3 +421,10 @@ You need this config when:
 
     It's Dangeroous
     - Verification link, that verification link will data token 
+
+### Note Password reset
+
+Steps 
+    1. Provide the email
+    2. Send the reset link
+    3. Reset password -> Password reset confirm
