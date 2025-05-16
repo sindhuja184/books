@@ -6,3 +6,4 @@ alembic
 passlib
 pyjwt
 aioredis
+itsdangerous

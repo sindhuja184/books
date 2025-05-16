@@ -10,6 +10,7 @@ Commands
 9. docker start redis
 10. docker run --name redis -p 6379:6379 -d redis
 11. docker ps
+12.
 
 
 Type "help" for help.
@@ -402,3 +403,21 @@ Send requests with fake Host headers (like evil.com) to trick your app or mislea
 
 This could be used in phishing, cache poisoning, or even SSRF attacks in some cases.
 
+
+
+# SENDING MAILS
+You need this config when:
+
+   -  You're sending verification emails
+
+    - Password reset links
+
+    - Notifications or contact forms
+
+    - Any app feature that requires sending email
+
+    ### Adding e-mail verificaation
+
+
+    It's Dangeroous
+    - Verification link, that verification link will data token 

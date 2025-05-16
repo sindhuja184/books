@@ -21,7 +21,7 @@ class UserModel(BaseModel):
     first_name: str
     last_name:str
     is_verified: bool = Field(default=False)
-    password_hash:str = Field(exclude= True)
+    password_hash:str 
     created_at: datetime
     updated_at: datetime
     books : List[Book]
@@ -39,3 +39,7 @@ class UserLoginModel(BaseModel):
     password:str = Field(min_length= 6)
 
     
+class EmailModel(BaseModel):
+    addresses :List[str]
+    class Config:
+        from_attributes = True 
