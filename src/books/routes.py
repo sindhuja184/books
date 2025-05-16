@@ -12,32 +12,31 @@ from src.errors import BookNotFound
 router = APIRouter()
 book_service = BookService()
 access_token_bearer = AccessTokenBearer()
-role_checker = Depends(RoleChecker(['admin', 'user']))
 
+role_checker_admin = RoleChecker(['admin'])
+role_checker_user_admin= RoleChecker(['admin', "user"])
 
 # In the route:
+#No need authentication
 @router.get('/', 
-            response_model=List[Book], 
-            dependencies= [role_checker]
+            response_model=List[Book]
 )
 async def get_all_books(
     session: AsyncSession = Depends(get_session),
-    user_details = Depends(access_token_bearer),
     ):
     #Indicates whether this is a refresh token or an access token.
-    print(user_details)
     books = await book_service.get_all_books(session)
     return books  # No need for from_orm since we now have actual Book instances
 
 
 @router.get('/user/{user_uid}', 
             response_model=List[Book], 
-            dependencies= [role_checker]
 )
 async def get_user_book_submissions(
     user_uid: str,
     session: AsyncSession = Depends(get_session),
     user_details = Depends(access_token_bearer),
+    _: bool = Depends(role_checker_user_admin)
     ):
 
     books = await book_service.get_user_books(user_uid, session)
@@ -47,27 +46,27 @@ async def get_user_book_submissions(
 @router.post('/', 
              status_code=status.HTTP_201_CREATED, 
              response_model= Book, 
-            dependencies= [role_checker]
 )
 async def create_a_book(
     book_data: BookCreateModel, 
     session: AsyncSession = Depends(get_session),
-    token_details : dict = Depends(access_token_bearer)
+    token_details : dict = Depends(access_token_bearer),
+    _: bool = Depends(role_checker_user_admin)
 )-> dict:
     user_id = token_details.get('user')['user_uid']
     new_book = await book_service.create_book(book_data, user_id, session)
     return new_book
 
 
-
+#No need authentication
 @router.get('/{book_uid}', 
             response_model = BookDetailModel,
-            dependencies= [role_checker]
 )
 async def get_book(
     book_uid:str,
     session: AsyncSession = Depends(get_session),
-    token_details : dict = Depends(access_token_bearer)
+    # token_details : dict = Depends(access_token_bearer),
+    # _: bool = Depends(role_checker_user_admin)
     ) -> dict:
     book = await book_service.get_book(book_uid, session)
     if book:
@@ -79,13 +78,13 @@ async def get_book(
 
 @router.patch('/{book_uid}', 
               response_model=Book,
-              dependencies= [role_checker]
 )
 async def update_book(
     book_uid: str, 
     book_update_data: BookUpdateModel,
     session: AsyncSession = Depends(get_session),
-    user_details = Depends(access_token_bearer)
+    user_details = Depends(access_token_bearer),
+    _: bool = Depends(role_checker_user_admin)
     ) -> dict:
     
     update_book = await book_service.update_book(book_uid, book_update_data, session)
@@ -98,12 +97,12 @@ async def update_book(
 
 @router.delete('/{book_uid}', 
                status_code= status.HTTP_204_NO_CONTENT,
-               dependencies= [role_checker]
 )
 async def delete_book(
     book_uid: str, 
     session: AsyncSession = Depends(get_session),
-    user_details = Depends(access_token_bearer)
+    user_details = Depends(access_token_bearer),
+    _: bool = Depends(role_checker_admin)
     ):
     book_to_delete = await book_service.delete_book(book_uid, session)
 

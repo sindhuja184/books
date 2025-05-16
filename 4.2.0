@@ -1,0 +1,2 @@
+Requirement already satisfied: redis in c:\users\sindh\onedrive\desktop\napindam\.venv\lib\site-packages (6.1.0)
+Requirement already satisfied: async-timeout>=4.0.3 in c:\users\sindh\onedrive\desktop\napindam\.venv\lib\site-packages (from redis) (5.0.1)

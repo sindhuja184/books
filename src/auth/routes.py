@@ -25,16 +25,17 @@ from src.celery_tasks import send_email
 
 auth_router = APIRouter()
 user_service = UserService()
-role_checker = RoleChecker(['admin', "user"])
+role_checker_admin = RoleChecker(['admin'])
+role_checker_user_admin= RoleChecker(['admin', "user"])
 
 
 REFRESH_TOKEN_EXPIRY = 2
 
 
-
-
 @auth_router.post('/send_mail')
-async def send_mail(emails: EmailModel):
+async def send_mail(
+    emails: EmailModel,
+    _: bool = Depends(role_checker_admin)):
     emails = emails.addresses
 
     html = "<h1>Welcome to the app</h1>"
@@ -84,18 +85,16 @@ async def create_user_account(
         body = html_message
     )
 
-    bg_tasks.add_task(mail.send_message(message))
+    await mail.send_message(message)
     
     return {
         "message" : "Account Created!! Check email to verify your account",
         "user" : new_user
     } 
-
-
 @auth_router.get('/verify/{token}')
 async def verify_user_account(
     token: str,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     token_data = decode_url_safe_token(token)
 
@@ -124,7 +123,7 @@ async def verify_user_account(
 @auth_router.post('/login')
 async def login_users(
     login_data: UserLoginModel,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     email = login_data.email
     password = login_data.password
@@ -168,7 +167,10 @@ async def login_users(
 
 
 @auth_router.get('/refresh_token')
-async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer())):
+async def get_new_access_token(
+    token_details: dict = Depends(RefreshTokenBearer()),
+     _: bool = Depends(role_checker_user_admin)
+    ):
     expiry_timestamp =  token_details['exp']
 
     if datetime.fromtimestamp(expiry_timestamp) > datetime.now():
@@ -186,12 +188,14 @@ async def get_new_access_token(token_details: dict = Depends(RefreshTokenBearer(
 @auth_router.get('/me', response_model=UserBooksModel)
 async def get_current_user(
     user = Depends(get_current_user),
-    _: bool = Depends(role_checker)):
+    _: bool = Depends(role_checker_user_admin)):
     return user 
 
 
 @auth_router.get('/logout')
-async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
+async def revoke_token(
+    token_details: dict = Depends(AccessTokenBearer()),
+     _: bool = Depends(role_checker_user_admin)):
 
     jti = token_details['jti']
 
@@ -205,7 +209,9 @@ async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
     )
 
 @auth_router.post('/password-reset-request')
-async def password_reset_request(email_data: PasswordResetRequestModel):
+async def password_reset_request(
+    email_data: PasswordResetRequestModel,
+     _: bool = Depends(role_checker_user_admin)):
     email = email_data.email
 
     token = create_url_safe_token({'email': email})
@@ -216,8 +222,13 @@ async def password_reset_request(email_data: PasswordResetRequestModel):
     <h1>Reset your password</h1>
     <p>Please click this <a href = "{link}">link</a> to reset your password</p>
     """
-    emails = [email]
-    send_email.delay(emails, "Reset your password", html_message)
+    message = create_message(
+        receipients=[email],
+        subject= 'Reset your password',
+        body = html_message
+    )
+
+    await mail.send_message(message)
     
     return JSONResponse(
         content = {
@@ -226,12 +237,12 @@ async def password_reset_request(email_data: PasswordResetRequestModel):
         status_code = status.HTTP_200_OK
     )
 
-
 @auth_router.post('/password-reset-confirm/{token}')
 async def reset_account_password(
     token: str,
     password: PasswordResetConfirmModel,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+     _: bool = Depends(role_checker_user_admin)
 ):
     new_password = password.new_password
     confirm_password = password.confirm_password
