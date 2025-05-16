@@ -3,8 +3,6 @@
 A **production-grade backend system** using FastAPI, PostgreSQL, Redis, and Celery. Built with modern software practices, security standards, and deployment readiness.
 ---
 
-## 📌 Why This Project Matters for Placements
-
 This backend demonstrates:
 
 - FastAPI (async Python framework)
@@ -34,9 +32,4 @@ This backend demonstrates:
 | `Security Best Practices` | Password hashing, token expiry, CORS config, input validation          |
 ---
 
-# FastAPI Backend Project - Setup & Commands
-
-This repository contains a FastAPI backend with PostgreSQL, Redis, Alembic migrations, JWT authentication, and Celery background tasks.
-
----
 
