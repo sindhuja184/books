@@ -287,3 +287,11 @@ Now three relationships
 `ERROR HANDLING` 
 
 Error handler of fastpi is used to cistomise the respnse
+
+`MIDDLEWARE`
+Middleware is a software layer that sits between the client and the server (or between different parts of a system), and is used to process requests and responses. It acts like a bridge or interceptor that can modify or handle requests before they reach the main application logic or after the response is created.
+
+- Sit between requests and responsess
+![alt text](image.png)
+See the diagram for reference
+
