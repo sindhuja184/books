@@ -9,3 +9,5 @@ aioredis
 itsdangerous
 celery
 asgiref
+langchain
+langchain_community
